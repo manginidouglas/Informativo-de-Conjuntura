@@ -1,0 +1,102 @@
+---
+title: "Informativo de Conjuntura"
+format: revealjs
+editor: visual
+---
+
+```{r setup}
+
+library(tidyverse)
+library(readxl)
+library(here)
+library(httr2)
+library(jsonlite)
+library(rsdmx) # ze
+library(fredr) # eua 
+library(BISdata) # https://data.bis.org/
+library(plotly)
+
+start_date <- Sys.Date() - years(6)
+end_date <- Sys.Date()
+start_date_str <- format(start_date, "%Y-%m-%d")
+end_date_str <- format(end_date, "%Y-%m-%d")
+
+source("scripts/functions.R")
+source("scripts/argentina.R")
+source("scripts/Estados_Unidos.R")
+source("scripts/Zona_do_Euro.R")
+source("scripts/china.R")
+
+internacional <- rbind(argentina, us, zona_do_euro, china)
+```
+
+## Produto Interno Bruto
+
+```{r}
+# plot PIB
+pib <- internacional %>%
+  filter(variavel == "PIB") %>%
+  ggplot(aes(x = data, y = valor, color = area))+
+  geom_line(linewidth = 1.4)+
+  ggthemes::scale_color_colorblind()+
+  theme_minimal()
+
+
+plotly::ggplotly(
+  pib, 
+  tooltip = c("data", "valor"),
+  dynamicTicks = TRUE)
+
+```
+
+## Inflação
+
+```{r}
+inflacao <- internacional %>%
+  filter(variavel == "Taxa de Inflação") %>%
+  ggplot(aes(x = data, y = valor))+
+  geom_line(aes(color = area), linewidth = 1.4)+
+  ggthemes::scale_color_colorblind()+
+  theme_minimal()
+
+plotly::ggplotly(
+  inflacao,
+  tooltip = c("data", "valor"),
+  dynamicTicks = TRUE)
+
+```
+
+## Taxa de Juros
+
+```{r}
+juros <- internacional %>%
+  filter(variavel == "Taxa de Juros") %>%
+  ggplot(aes(x = data, y = valor, color = area))+
+  geom_line(linewidth = 1.4)+
+  ggthemes::scale_color_colorblind()+
+  theme_minimal()
+
+plotly::ggplotly(
+  p = juros,
+  tooltip = c("data", "valor"),
+  dynamicTicks = TRUE)
+
+```
+
+## Taxa de Desemprego
+
+```{r}
+
+desemprego <- internacional %>%
+  filter(variavel == "Taxa de Desemprego") %>%
+  ggplot(aes(x = data, y = valor, color = area))+
+  geom_line(linewidth = 1.4)+
+  ggthemes::scale_color_colorblind()+
+  theme_minimal()
+
+plotly::ggplotly(
+  desemprego,
+  tooltip = c("data", "valor"),
+  dynamicTicks = TRUE)
+
+```
